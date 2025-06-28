@@ -60,13 +60,15 @@ dependencies {
 
     // Glide (for loading image URIs)
     implementation(libs.glide)
-    ksp(libs.glide.compiler)
+    ksp(libs.glide.ksp)
+
 
     // ML Kit: On-device text recognition
     implementation(libs.text.recognition)
 
     // Kotlin coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Testing
     testImplementation(libs.junit)
