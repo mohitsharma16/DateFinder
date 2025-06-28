@@ -63,10 +63,10 @@ dependencies {
     ksp(libs.glide.compiler)
 
     // ML Kit: On-device text recognition
-    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation(libs.text.recognition)
 
     // Kotlin coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation(libs.kotlinx.coroutines.android)
 
     // Testing
     testImplementation(libs.junit)
