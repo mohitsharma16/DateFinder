@@ -71,10 +71,6 @@ class DateFinderViewModel : ViewModel() {
         }
     }
 
-    fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
-    }
-
     override fun onCleared() {
         super.onCleared()
         TTSHelper.shutdown()
