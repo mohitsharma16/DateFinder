@@ -32,8 +32,6 @@ fun ImagePreview(
 ) {
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }
-    var loadError by remember { mutableStateOf(false) }
-
     val backgroundColor = MaterialTheme.colorScheme.surfaceVariant.toArgb()
 
     Box(
@@ -54,7 +52,6 @@ fun ImagePreview(
             },
             update = { imageView ->
                 isLoading = true
-                loadError = false
 
                 Glide.with(context)
                     .load(imageUri)
@@ -74,7 +71,6 @@ fun ImagePreview(
                             isFirstResource: Boolean
                         ): Boolean {
                             isLoading = false
-                            loadError = true
                             return false
                         }
 
