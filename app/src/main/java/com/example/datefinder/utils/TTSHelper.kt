@@ -13,40 +13,44 @@ object TTSHelper {
     private var isInitialized = false
     private val pendingTexts = mutableListOf<String>()
 
-    fun speakText(context: Context, text: String) {
-        Log.d(TAG, "Speaking text: $text")
+    fun speakText(context: Context, text: String, forceSpeak: Boolean = false) {
+        Log.d(TAG, "Request to speak: $text | forceSpeak=$forceSpeak")
 
-        if (tts == null) {
-            initializeTTS(context)
+        if (tts == null || !isInitialized) {
+            initializeTTS(context) {
+                speakText(context, text, forceSpeak)
+            }
+            return
         }
 
-        if (isInitialized) {
-            performSpeech(text)
-        } else {
-            // Queue the text to be spoken once TTS is initialized
-            pendingTexts.add(text)
+        if (isSpeaking()) {
+            if (forceSpeak) {
+                stop()
+                Log.d(TAG, "Stopped current speech to force speak new text")
+            } else {
+                Log.d(TAG, "Already speaking. Skipping new speech.")
+                return
+            }
         }
+        performSpeech(context, text)
     }
 
-    private fun initializeTTS(context: Context) {
-        tts = TextToSpeech(context) { status ->
+    private fun initializeTTS(context: Context, onReady: (() -> Unit)? = null) {
+        tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 Log.d(TAG, "TTS initialized successfully")
                 isInitialized = true
 
-                // Set language
                 val langResult = tts?.setLanguage(Locale.getDefault())
                 if (langResult == TextToSpeech.LANG_MISSING_DATA ||
                     langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.w(TAG, "Language not supported, using English")
-                    tts?.setLanguage(Locale.ENGLISH)
+                    tts?.language = Locale.ENGLISH
                 }
 
-                // Set speech rate and pitch
                 tts?.setSpeechRate(1.0f)
                 tts?.setPitch(1.0f)
 
-                // Set utterance progress listener
                 tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(utteranceId: String?) {
                         Log.d(TAG, "Started speaking: $utteranceId")
@@ -61,9 +65,7 @@ object TTSHelper {
                     }
                 })
 
-                // Speak any pending texts
-                pendingTexts.forEach { performSpeech(it) }
-                pendingTexts.clear()
+                onReady?.invoke()
 
             } else {
                 Log.e(TAG, "TTS initialization failed")
@@ -72,13 +74,36 @@ object TTSHelper {
         }
     }
 
-    private fun performSpeech(text: String) {
+    private fun performSpeech(context: Context, text: String) {
+        if (!isInitialized || tts == null) {
+            Log.w(TAG, "TTS not initialized during performSpeech. Reinitializing...")
+            initializeTTS(context) {
+                speakText(context, text)
+            }
+            return
+        }
+
         val utteranceId = "tts_${System.currentTimeMillis()}"
         val result = tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
 
         if (result == TextToSpeech.ERROR) {
-            Log.e(TAG, "Error in speaking text")
+            Log.e(TAG, "Error in speaking text. Reinitializing...")
+            isInitialized = false
+            initializeTTS(context) {
+                speakText(context, text)
+            }
         }
+    }
+
+    fun isSpeaking(): Boolean {
+        val speaking = tts?.isSpeaking ?: false
+        Log.d(TAG, "isSpeaking() = $speaking")
+        return speaking
+    }
+
+    fun stop() {
+        Log.d(TAG, "Stopping TTS")
+        tts?.stop()
     }
 
     fun shutdown() {
@@ -88,13 +113,5 @@ object TTSHelper {
         tts = null
         isInitialized = false
         pendingTexts.clear()
-    }
-
-    fun isSpeaking(): Boolean {
-        return tts?.isSpeaking ?: false
-    }
-
-    fun stop() {
-        tts?.stop()
     }
 }
