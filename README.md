@@ -118,8 +118,8 @@ The `DateExtractor` uses a comprehensive pattern matching system with 12+ regex 
 
 ### Prerequisites:
 - **Android Studio**: Arctic Fox or newer
-- **Minimum SDK**: API 21 (Android 5.0)
-- **Target SDK**: API 34 (Android 14)
+- **Minimum SDK**: API 24 (Android 7.0)
+- **Target SDK**: API 36 (Android 16)
 - **Kotlin**: 1.9.0 or newer
 
 ### Dependencies (app/build.gradle):
