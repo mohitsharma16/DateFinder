@@ -11,10 +11,12 @@ object TTSHelper {
     private const val TAG = "TTSHelper"
     private var tts: TextToSpeech? = null
     private var isInitialized = false
+    private var lastSpokenText: String? = null
     private val pendingTexts = mutableListOf<String>()
 
     fun speakText(context: Context, text: String, forceSpeak: Boolean = false) {
         Log.d(TAG, "Request to speak: $text | forceSpeak=$forceSpeak")
+        lastSpokenText = text
 
         if (tts == null || !isInitialized) {
             initializeTTS(context) {
@@ -35,6 +37,12 @@ object TTSHelper {
         performSpeech(context, text)
     }
 
+    fun repeatLastSpoken(context: Context) {
+        lastSpokenText?.let {
+            speakText(context, it, forceSpeak = true)
+        } ?: Log.w(TAG, "No text available to repeat")
+    }
+
     private fun initializeTTS(context: Context, onReady: (() -> Unit)? = null) {
         tts = TextToSpeech(context.applicationContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -43,7 +51,8 @@ object TTSHelper {
 
                 val langResult = tts?.setLanguage(Locale.getDefault())
                 if (langResult == TextToSpeech.LANG_MISSING_DATA ||
-                    langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    langResult == TextToSpeech.LANG_NOT_SUPPORTED
+                ) {
                     Log.w(TAG, "Language not supported, using English")
                     tts?.language = Locale.ENGLISH
                 }
