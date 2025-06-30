@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -313,7 +314,7 @@ fun DateFinderScreen(
                                         viewModel.repeatLastSpoken(context)
                                     }) {
                                         Icon(
-                                            imageVector = Icons.Filled.Refresh,
+                                            imageVector = Icons.Rounded.PlayArrow,
                                             contentDescription = "Repeat Audio",
                                             tint = MaterialTheme.colorScheme.primary
                                         )
