@@ -70,6 +70,9 @@ class DateFinderViewModel : ViewModel() {
             }
         }
     }
+    fun repeatLastSpoken(context: Context) {
+        TTSHelper.repeatLastSpoken(context)
+    }
 
     override fun onCleared() {
         super.onCleared()
