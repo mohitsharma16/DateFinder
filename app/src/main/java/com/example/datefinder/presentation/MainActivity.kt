@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -115,6 +117,7 @@ fun DateFinderScreen(
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -305,6 +308,16 @@ fun DateFinderScreen(
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    IconButton(onClick = {
+                                        viewModel.repeatLastSpoken(context)
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Refresh,
+                                            contentDescription = "Repeat Audio",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
